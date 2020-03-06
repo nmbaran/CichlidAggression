@@ -1,0 +1,17 @@
+ids,ind,batch,sampletype,species,test
+MC10.Input,MC10,a,Input,MC,Control
+MC10.IP,MC10,a,IP,MC,Control
+MC21.Input,MC21,b,Input,MC,MT
+MC21.IP,MC21,b,IP,MC,MT
+MC22.Input,MC22,b,Input,MC,Control
+MC22.IP,MC22,b,IP,MC,Control
+MC9.Input,MC9,a,Input,MC,MT
+MC9.IP,MC9,a,IP,MC,MT
+Petro11.Input,Petro11,a,Input,Petro,Control
+Petro11.IP,Petro11,a,IP,Petro,Control
+Petro12.Input,Petro12,a,Input,Petro,MT
+Petro12.IP,Petro12,a,IP,Petro,MT
+Petro23.Input,Petro23,b,Input,Petro,MT
+Petro23.IP,Petro23,b,IP,Petro,MT
+Petro24.Input,Petro24,b,Input,Petro,Control
+Petro24.IP,Petro24,b,IP,Petro,Control
