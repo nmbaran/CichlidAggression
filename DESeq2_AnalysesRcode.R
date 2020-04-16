@@ -13,11 +13,11 @@ library(viridis)
 library("pheatmap")
 library("RColorBrewer")
 library(Rtsne)
-
-#library(Biobase)
-#library("DESeq2")
+library(Biobase)
+library("DESeq2")
 
 #Please note: Petro instead of PC used in all code for Petrotilapia chtimba (rock species). MC used for Mchenga conophoros (sand species).
+#Additionally, 'test' here refers to the experimental condition, i.e. either mirror test versus the control condition. 
 
 #DESeq2 Analyses
 #This is the read count matrix which is the input for DESeq2. 
@@ -51,19 +51,22 @@ plotDispEsts(dds1)
 res1$padj[is.na(res1$padj)] <- 100
 res1Sig <- as.data.frame(res1[res1$padj < 0.05,])
 
+res1_table <- as.data.frame(res1)
+
+#write.table(res1_table, file="Model1_InputvIP_DESeq2_output.csv",sep=",",row.names=T)
+
 #save(dds1,res1,res1Sig, colData,file="IPvsInputOnly.RData") # save it for the future
 
-#load("~/IPvsInputOnly.RData")
+#load("IPvsInputOnly.RData")
 
 #write.table(res1Sig, file="IP vs Input Only Significant.csv",sep=",",row.names=T)
 
 #Volcano Plot
-res1_table <- as.data.frame(res1)
-#write.table(res1_table, file="Model1_InputvIP_DESeq2_output.csv",sep=",",row.names=T)
 
 ##Highlight genes that have an absolute fold change > 2 and adjusted p-value < 0.05
 res1_table$threshold = as.factor(abs(res1_table$log2FoldChange) > 2 & res1_table$padj < 0.05)
-
+res1_table$threshold=factor(res1_table$threshold,
+                          labels = c("NS", "p < 0.05"))
 #png("InputvsIPVolcanoPlot.png", units="in", width=5, height=4, res=300)
 ggplot(data=res1_table, aes(x=log2FoldChange, y=-log10(padj), colour=threshold)) +
   geom_point(alpha=0.4, size=1.75) +
@@ -94,15 +97,16 @@ res2$padj[is.na(res2$padj)] <- 100
 res2Sig <- as.data.frame(res2[res2$padj < 0.05,])
 
 res2_table <- as.data.frame(res2)
+
 #write.table(res2_table, file="Model2_MTxIP_DESeq2_output.csv",sep=",",row.names=T)
 
 #save(dds2,res2,res2Sig, colData,file="MTxIP.RData") # save it for the future 
 
-#load("~/MTxIP.RData")
+#load("MTxIP.RData")
 
 #write.table(res2Sig, file="MTxIP Significant.csv",sep=",",row.names=T)
 
-#Volcano Plots
+#Volcano Plot
 
 ##Highlight genes that have an absolute fold change > 2 and adjusted p-value < 0.05
 res2_table$threshold = as.factor(abs(res2_table$log2FoldChange) > 2 & res2_table$padj < 0.05)
@@ -136,16 +140,17 @@ res3$padj[is.na(res3$padj)] <- 100
 res3Sig <- as.data.frame(res3[res3$padj < 0.05,])
 
 res3_table <- as.data.frame(res3)
+
 #write.table(res3_table, file="Model3_MTxIPxSpecies_DESeq2_output.csv",sep=",",row.names=T)
 
 #save(dds3,res3,res3Sig, colData,file="MTxIPxSpecies.RData") # save it for the future 
 
-#load("~/MTxIPxSpecies.RData")
+#load("MTxIPxSpecies.RData")
 
 #write.table(res3, file="MTxIPxSpecies_out.csv",sep=",",row.names=T)
 #write.table(res3Sig, file="MTxIPxSpecies Significant.csv",sep=",",row.names=T)
 
-#Volcano Plots
+#Volcano Plot
 
 ##Highlight genes that have an absolute fold change > 2 and adjusted p-value < 0.05
 res3_table$threshold = as.factor(abs(res3_table$log2FoldChange) > 2 & res3_table$padj < 0.05)
@@ -507,25 +512,7 @@ pheatmap(sampleDistMatrix,
 
 #Making paper figures
 
-setwd("~/Dropbox/My Documents/Manuscripts/Aggression & PhosphoTRAP cichlid paper/Images")
-
-#Figure 3B
-#png("InputvsIPVolcanoPlot.tiff", units="in", width=2.56, height=2.56, res=600)
-ggplot(data=res1_table, aes(x=log2FoldChange, y=-log10(padj), colour=threshold)) +
-  geom_point(alpha=0.1, size=1) +
-  scale_colour_manual(values=c("slategray3","darkorchid2")) +
-  theme(plot.background = element_blank()
-        ,panel.background = element_blank()
-        #,panel.border = element_rect(colour = "black", fill=NA)
-        ,legend.position = "none",axis.text.x=element_text(size=11, color='black')
-        ,axis.text.y=element_text(size=11, color='black')
-        ,axis.line = element_line(colour = "black")
-        ,text = element_text(size=12, color='black')) +
-  geom_hline(yintercept = 1.301, colour="#990000", linetype="dashed") + geom_vline(xintercept = -2, colour="#990000", linetype="dashed") + geom_vline(xintercept = 2, colour="#990000", linetype="dashed") + 
-  xlim(c(-8, 8)) + ylim(c(0, 20)) +
-  xlab(expression(log[2]("Fold Change"))) + ylab(expression(log[10]("p-value")))
-#dev.off()
-
+#setwd("~/Figures")
 #Principle Components Analysis####################
 
 #Figure 3A
@@ -559,6 +546,24 @@ ggplot(pcaDatarlog, aes(x = PC1, y = PC2, color = species, shape = TestSample)) 
         ,legend.margin=unit(0.5,"cm")
         #,legend.key.height=unit(0.75,"line")
         ,legend.key = element_blank())
+#dev.off()
+
+#Figure 3B
+#png("InputvsIPVolcanoPlot.tiff", units="in", width=2.56, height=2.56, res=600)
+ggplot(data=res1_table, aes(x=log2FoldChange, y=-log10(padj), colour=threshold)) +
+  geom_point(alpha=0.1, size=1) +
+  scale_colour_manual(values=c("slategray3","darkorchid2")) +
+  theme(plot.background = element_blank()
+        ,panel.background = element_blank()
+        #,panel.border = element_rect(colour = "black", fill=NA)
+        ,legend.position = "none"
+        ,axis.text.x=element_text(size=11, color='black')
+        ,axis.text.y=element_text(size=11, color='black')
+        ,axis.line = element_line(colour = "black")
+        ,text = element_text(size=12, color='black')) +
+  geom_hline(yintercept = 1.301, colour="#990000", linetype="dashed") + geom_vline(xintercept = -2, colour="#990000", linetype="dashed") + geom_vline(xintercept = 2, colour="#990000", linetype="dashed") + 
+  xlim(c(-8, 8)) + ylim(c(0, 20)) +
+  xlab(expression(log[2]("Fold Change"))) + ylab(expression(log[10]("p-value")))
 #dev.off()
 
 #Figure 4
